@@ -13,7 +13,12 @@ const __dirname = dirname(__filename);
 dotenv.config({ path: ".env" });
 ConnectDatabase();
 const app = express();
-const whitelist = ["http://localhost:5173", "http://localhost:3000"];
+const whitelist = [
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "https://iprc-be.onrender.com",
+    "https://www.jambams.jamb.gov.ng",
+];
 const corsOptions = {
     origin: (origin, callback) => {
         if (!origin || whitelist.includes(origin)) {

@@ -19,7 +19,12 @@ ConnectDatabase();
 
 const app = express();
 
-const whitelist = ["http://localhost:5173", "http://localhost:3000"];
+const whitelist = [
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "https://iprc-be.onrender.com",
+  "https://www.jambams.jamb.gov.ng",
+];
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
