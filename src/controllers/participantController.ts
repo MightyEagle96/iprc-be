@@ -31,7 +31,7 @@ export const registerParticipant = async (req: Request, res: Response) => {
     console.error(error);
 
     if (error?.code === 11000) {
-      const field = Object.keys(error.keyPattern)[0];
+      const field: any = Object.keys(error.keyPattern)[0];
       const value = error.keyValue?.[field];
 
       return res

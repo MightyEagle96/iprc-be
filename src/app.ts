@@ -19,7 +19,7 @@ ConnectDatabase();
 
 const app = express();
 
-const whitelist = ["http://localhost:5173", "http://localhost:4000"];
+const whitelist = ["http://localhost:5173", "http://localhost:3000"];
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
