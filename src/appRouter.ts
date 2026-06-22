@@ -1,5 +1,6 @@
 import { Router } from "express";
 import {
+  participantAction,
   registerParticipant,
   viewDashboard,
   viewParticipants,
@@ -10,6 +11,7 @@ const appRouter = Router();
 appRouter
   .post("/registerparticipant", registerParticipant)
   .get("/dashboard", viewDashboard)
-  .get("/participants", viewParticipants);
+  .get("/participants", viewParticipants)
+  .post("/action", participantAction);
 
 export default appRouter;

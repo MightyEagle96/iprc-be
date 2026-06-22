@@ -1,9 +1,10 @@
 import { Router } from "express";
-import { registerParticipant, viewDashboard, viewParticipants, } from "./controllers/participantController.js";
+import { participantAction, registerParticipant, viewDashboard, viewParticipants, } from "./controllers/participantController.js";
 const appRouter = Router();
 appRouter
     .post("/registerparticipant", registerParticipant)
     .get("/dashboard", viewDashboard)
-    .get("/participants", viewParticipants);
+    .get("/participants", viewParticipants)
+    .post("/action", participantAction);
 export default appRouter;
 //# sourceMappingURL=appRouter.js.map

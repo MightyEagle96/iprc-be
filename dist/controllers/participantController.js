@@ -96,4 +96,13 @@ export const viewParticipants = async (req, res) => {
     }
     catch (error) { }
 };
+export const participantAction = async (req, res) => {
+    try {
+        await Participant.updateOne({ _id: req.body._id }, { $set: { status: req.body.status } });
+        res.send("Participant status updated successfully");
+    }
+    catch (error) {
+        res.status(500).send("An unexpected error occurred");
+    }
+};
 //# sourceMappingURL=participantController.js.map
