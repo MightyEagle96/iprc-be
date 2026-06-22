@@ -19,7 +19,8 @@
     "dotenv": "^17.4.2",
     "exceljs": "^4.4.0",
     "express": "^5.2.1",
-    "mongoose": "^9.7.1"
+    "mongoose": "^9.7.1",
+    "socket.io": "^4.8.3"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
