@@ -69,9 +69,13 @@ app
 
   .use(express.json({ limit: "100mb" }))
 
+  .use(express.static(path.join(__dirname, "build")))
+
   .use("/api", appRouter)
 
-  .use(express.static(path.join(__dirname, "build")));
+  .use((req, res) => {
+    res.sendFile(path.join(__dirname, "build", "index.html"));
+  });
 
 server.listen(3000, () => {
   console.log("Server started on port 3000");
