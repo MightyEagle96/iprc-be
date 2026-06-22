@@ -18,6 +18,7 @@ export interface IParticipant {
   REGION: string;
   INName: string;
   INID: number;
+  name: string;
   status: status;
   createdAt: Date;
   updatedAt: Date;
@@ -136,9 +137,14 @@ const schema = new Schema<IParticipant>(
   },
   {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
   },
 );
 
+schema.virtual("name").get(function () {
+  return `${this.firstName} ${this.lastName}`;
+});
 schema
   .index({ email: 1 }, { unique: true })
   .index({ phone: 1 }, { unique: true })

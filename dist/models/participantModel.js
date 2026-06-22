@@ -107,6 +107,11 @@ const schema = new Schema({
     },
 }, {
     timestamps: true,
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+});
+schema.virtual("name").get(function () {
+    return `${this.firstName} ${this.lastName}`;
 });
 schema
     .index({ email: 1 }, { unique: true })

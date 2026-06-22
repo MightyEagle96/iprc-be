@@ -90,3 +90,25 @@ const getDashboard = async () => {
     console.error(error);
   }
 };
+
+export const viewParticipants = async (req: Request, res: Response) => {
+  try {
+    const page = (req.query.page || 1) as number;
+    const limit = (req.query.limit || 50) as number;
+
+    const participants = await Participant.find()
+      .lean()
+      .sort({ createdAt: -1 })
+      .skip((page - 1) * limit)
+      .limit(limit);
+
+    const mappedParticipants = participants.map((participant, index) => {
+      return {
+        ...participant,
+        id: (page - 1) * limit + index + 1,
+      };
+    });
+    const total = await Participant.countDocuments();
+    res.send({ total, participants: mappedParticipants });
+  } catch (error) {}
+};

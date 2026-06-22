@@ -76,4 +76,24 @@ const getDashboard = async () => {
         console.error(error);
     }
 };
+export const viewParticipants = async (req, res) => {
+    try {
+        const page = (req.query.page || 1);
+        const limit = (req.query.limit || 50);
+        const participants = await Participant.find()
+            .lean()
+            .sort({ createdAt: -1 })
+            .skip((page - 1) * limit)
+            .limit(limit);
+        const mappedParticipants = participants.map((participant, index) => {
+            return {
+                ...participant,
+                id: (page - 1) * limit + index + 1,
+            };
+        });
+        const total = await Participant.countDocuments();
+        res.send({ total, participants: mappedParticipants });
+    }
+    catch (error) { }
+};
 //# sourceMappingURL=participantController.js.map
