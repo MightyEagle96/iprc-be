@@ -25,7 +25,7 @@ const whitelist = [
   "http://localhost:5173",
   "http://localhost:3000",
   "https://iprc-be.onrender.com",
-  "https://www.iprc.jamb.gov.ng",
+  "https://iprc.jamb.gov.ng",
 ];
 
 const corsOptions: cors.CorsOptions = {
