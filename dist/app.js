@@ -47,11 +47,31 @@ io.on("connection", (socket) => {
         console.log("user disconnected", socket.id);
     });
 });
+// app
+//   .use(morgan("dev"))
+//   .use(cookieParser())
+//   .use(cors(corsOptions))
+//   .use(express.json({ limit: "100mb" }))
+//   .use(
+//     express.urlencoded({
+//       extended: true,
+//       limit: "100mb",
+//     }),
+//   )
+//   .use(express.static(path.join(__dirname, "build")))
+//   .use("/api", appRouter)
+//   .use((req, res) => {
+//     res.sendFile(path.join(__dirname, "build", "index.html"));
+//   });
 app
     .use(morgan("dev"))
     .use(cookieParser())
     .use(cors(corsOptions))
     .use(express.json({ limit: "100mb" }))
+    .use(express.urlencoded({
+    extended: true,
+    limit: "100mb",
+}))
     .use(express.static(path.join(__dirname, "build")))
     .use("/api", appRouter)
     .use((req, res) => {
