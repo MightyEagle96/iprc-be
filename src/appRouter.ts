@@ -32,5 +32,7 @@ appRouter
   //
 
   .post("/impact-registration", impactController.registerParticipant)
-  .post("/cohort", impactController.findCohort);
+  .post("/cohort", impactController.findCohort)
+  .get("/impact/stats", impactController.getDashboardStats)
+  .get("/impact/participants", impactController.getParticipants);
 export default appRouter;

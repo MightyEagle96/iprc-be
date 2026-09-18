@@ -188,6 +188,166 @@ class ImpactService {
       memberOfRccg: participant.memberOfRccg,
     };
   }
+
+  async getParticipants({
+    page = 1,
+    limit = 20,
+    search = "",
+    classCategory,
+    ageGrade,
+  }: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    classCategory?: "A" | "B" | "C";
+    ageGrade?: string;
+  }) {
+    const currentPage = Math.max(1, Number(page));
+    const pageLimit = Math.min(100, Math.max(1, Number(limit)));
+
+    const filter: any = {};
+
+    // ---------------------------------------------------------
+    // Search
+    // ---------------------------------------------------------
+
+    if (search?.trim()) {
+      const value = search.trim();
+
+      const searchConditions: any[] = [
+        { firstName: { $regex: value, $options: "i" } },
+        { lastName: { $regex: value, $options: "i" } },
+        { email: { $regex: value, $options: "i" } },
+        { phoneNumber: { $regex: value, $options: "i" } },
+      ];
+
+      // Registration number search
+      const registrationNumber = Number(value);
+
+      if (!Number.isNaN(registrationNumber)) {
+        searchConditions.push({
+          registrationNumber,
+        });
+      }
+
+      filter.$or = searchConditions;
+    }
+
+    // ---------------------------------------------------------
+    // Filters
+    // ---------------------------------------------------------
+
+    if (classCategory) {
+      filter.classCategory = classCategory;
+    }
+
+    if (ageGrade) {
+      filter.ageGrade = ageGrade;
+    }
+
+    const skip = (currentPage - 1) * pageLimit;
+
+    const [participants, total] = await Promise.all([
+      Impact.find(filter)
+        .select("-__v")
+        .sort({ registrationNumber: -1 })
+        .skip(skip)
+        .limit(pageLimit)
+        .lean(),
+
+      Impact.countDocuments(filter),
+    ]);
+
+    return {
+      participants,
+      pagination: {
+        page: currentPage,
+        limit: pageLimit,
+        total,
+        totalPages: Math.ceil(total / pageLimit),
+        hasNextPage: currentPage < Math.ceil(total / pageLimit),
+        hasPreviousPage: currentPage > 1,
+      },
+    };
+  }
+
+  async getDashboardStats() {
+    const [
+      total,
+      members,
+      nonMembers,
+      classDistribution,
+      ageDistribution,
+      genderDistribution,
+    ] = await Promise.all([
+      Impact.countDocuments(),
+
+      Impact.countDocuments({
+        memberOfRccg: true,
+      }),
+
+      Impact.countDocuments({
+        memberOfRccg: false,
+      }),
+
+      Impact.aggregate([
+        {
+          $group: {
+            _id: "$classCategory",
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: { _id: 1 },
+        },
+      ]),
+
+      Impact.aggregate([
+        {
+          $group: {
+            _id: "$ageGrade",
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: { _id: 1 },
+        },
+      ]),
+
+      Impact.aggregate([
+        {
+          $group: {
+            _id: "$gender",
+            count: { $sum: 1 },
+          },
+        },
+        {
+          $sort: { _id: 1 },
+        },
+      ]),
+    ]);
+
+    return {
+      total,
+      members,
+      nonMembers,
+
+      classes: classDistribution.map((item) => ({
+        category: item._id,
+        count: item.count,
+      })),
+
+      ageGrades: ageDistribution.map((item) => ({
+        ageGrade: item._id,
+        count: item.count,
+      })),
+
+      genders: genderDistribution.map((item) => ({
+        gender: item._id,
+        count: item.count,
+      })),
+    };
+  }
 }
 
 export default new ImpactService();

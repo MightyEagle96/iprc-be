@@ -68,6 +68,47 @@ class ImpactController {
             });
         }
     }
+    async getParticipants(req, res) {
+        try {
+            const { page = 1, limit = 20, search = "", classCategory, ageGrade, } = req.query;
+            const result = await impactService.getParticipants({
+                page: Number(page),
+                limit: Number(limit),
+                search: String(search),
+                classCategory: classCategory,
+                ageGrade: ageGrade ? String(ageGrade) : undefined,
+            });
+            return res.status(200).json({
+                success: true,
+                message: "Participants retrieved successfully",
+                data: result,
+            });
+        }
+        catch (error) {
+            console.error("Get participants error:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Unable to retrieve participants",
+            });
+        }
+    }
+    async getDashboardStats(req, res) {
+        try {
+            const stats = await impactService.getDashboardStats();
+            return res.status(200).json({
+                success: true,
+                message: "Dashboard statistics retrieved successfully",
+                data: stats,
+            });
+        }
+        catch (error) {
+            console.error("Dashboard stats error:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Unable to retrieve dashboard statistics",
+            });
+        }
+    }
 }
 export default new ImpactController();
 //# sourceMappingURL=impact.controller.js.map
