@@ -10,13 +10,11 @@ import dotenv from "dotenv";
 import { ConnectDatabase } from "./database.js";
 import appRouter from "./appRouter.js";
 import http from "http";
-import { sendSms } from "./services/sms.api.js";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 dotenv.config({ path: ".env" });
 ConnectDatabase();
 const app = express();
-sendSms("Hello world", "2348131065776");
 // const whitelist = [
 //   "http://localhost:5173",
 //   "http://localhost:3000",
@@ -33,7 +31,11 @@ sendSms("Hello world", "2348131065776");
 //   },
 //   credentials: true, // If you use cookies/sessions
 // };
-const whitelist = ["http://localhost:5173", "http://localhost:4002"];
+const whitelist = [
+    "http://localhost:5173",
+    "http://localhost:4002",
+    "https://impact2026.onrender.com",
+];
 const corsOptions = {
     origin: (origin, callback) => {
         if (!origin)

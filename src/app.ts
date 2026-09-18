@@ -22,8 +22,6 @@ ConnectDatabase();
 
 const app = express();
 
-sendSms("Hello world", "2348131065776");
-
 // const whitelist = [
 //   "http://localhost:5173",
 //   "http://localhost:3000",
@@ -41,7 +39,11 @@ sendSms("Hello world", "2348131065776");
 //   },
 //   credentials: true, // If you use cookies/sessions
 // };
-const whitelist = ["http://localhost:5173", "http://localhost:4002"];
+const whitelist = [
+  "http://localhost:5173",
+  "http://localhost:4002",
+  "https://impact2026.onrender.com",
+];
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);
