@@ -11,7 +11,15 @@ export const importAttendeesFunc = async (attendees) => {
 export const importAttendees = async (req, res) => {
     try {
         const attendees = req.body;
-        const result = await importAttendeesFunc(attendees);
+        const updatedAttendees = attendees.map((attendee) => {
+            return {
+                ...attendee,
+                username: attendee.email,
+                accredited: true,
+                timeAccredited: new Date(),
+            };
+        });
+        const result = await importAttendeesFunc(updatedAttendees);
         res.send("Attendees imported successfully");
     }
     catch (error) {
@@ -76,7 +84,7 @@ export const getAccreditedParticipants = async (req, res) => {
         const limit = (req.query.limit || 50);
         const participants = await Attendee.find({ accredited: true })
             .lean()
-            .sort({ updatedAt: 1 })
+            .sort({ timeAccredited: -1 })
             .skip((page - 1) * limit)
             .limit(limit);
         const mappedParticipants = participants.map((participant, index) => {
@@ -90,6 +98,27 @@ export const getAccreditedParticipants = async (req, res) => {
     }
     catch (error) {
         res.status(500).send("An unexpected error occurred");
+    }
+};
+export const registerAttendee = async (req, res) => {
+    try {
+        await Attendee.create({
+            ...req.body,
+            accredited: true,
+            timeAccredited: new Date(),
+        });
+        io.emit("new-registration", await getAttendanceDashboard());
+        res.send("Registered successfully");
+    }
+    catch (error) {
+        if (error?.code === 11000) {
+            const field = Object.keys(error.keyPattern)[0];
+            const value = error.keyValue?.[field];
+            return res
+                .status(400)
+                .send(`${field}${value ? ` (${value})` : ""} already exists`);
+        }
+        res.status(500).send(error?.message || "An unexpected error occurred");
     }
 };
 //# sourceMappingURL=attendeeController.js.map

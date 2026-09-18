@@ -12,6 +12,7 @@ import dotenv from "dotenv";
 import { ConnectDatabase } from "./database.js";
 import appRouter from "./appRouter.js";
 import http from "http";
+import { sendSms } from "./services/sms.api.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -21,24 +22,46 @@ ConnectDatabase();
 
 const app = express();
 
-const whitelist = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "https://iprc-be.onrender.com",
-  "https://iprc.jamb.gov.ng",
-];
+sendSms("Hello world", "2348131065776");
 
+// const whitelist = [
+//   "http://localhost:5173",
+//   "http://localhost:3000",
+//   "https://iprc-be.onrender.com",
+//   "https://iprc.jamb.gov.ng",
+// ];
+
+// const corsOptions: cors.CorsOptions = {
+//   origin: (origin, callback) => {
+//     if (!origin || whitelist.includes(origin)) {
+//       callback(null, true); // Allow request
+//     } else {
+//       callback(new Error("Not allowed by CORS")); // Block request
+//     }
+//   },
+//   credentials: true, // If you use cookies/sessions
+// };
+const whitelist = ["http://localhost:5173", "http://localhost:4002"];
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {
-    if (!origin || whitelist.includes(origin)) {
-      callback(null, true); // Allow request
+    if (!origin) return callback(null, true);
+
+    const isLocalhost =
+      origin.includes("localhost") || origin.includes("127.0.0.1");
+
+    const isLAN =
+      /^http:\/\/192\.168\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(origin) ||
+      /^http:\/\/172\.20\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(origin) ||
+      /^http:\/\/10\.\d{1,3}\.\d{1,3}\.\d{1,3}(:\d+)?$/.test(origin);
+
+    if (isLocalhost || isLAN || whitelist.includes(origin)) {
+      callback(null, true);
     } else {
-      callback(new Error("Not allowed by CORS")); // Block request
+      callback(new Error(`CORS blocked: ${origin}`));
     }
   },
-  credentials: true, // If you use cookies/sessions
+  credentials: true,
 };
-
 app.use(cors(corsOptions)).use(express.json()).use(morgan("dev"));
 
 const server = http.createServer(app);

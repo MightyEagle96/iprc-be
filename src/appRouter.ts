@@ -10,8 +10,10 @@ import {
   attendanceDashboard,
   getAccreditedParticipants,
   importAttendees,
+  registerAttendee,
   searchParticipant,
 } from "./controllers/attendeeController.js";
+import impactController from "./controllers/impact.controller.js";
 
 const appRouter = Router();
 
@@ -24,5 +26,11 @@ appRouter
   .get("/attendancedashboard", attendanceDashboard)
   .get("/searchparticipant", searchParticipant)
   .post("/accreditparticipant", accreditParticipant)
-  .get("/getaccreditedparticipants", getAccreditedParticipants);
+  .get("/getaccreditedparticipants", getAccreditedParticipants)
+  .post("/registerattendee", registerAttendee)
+
+  //
+
+  .post("/impact-registration", impactController.registerParticipant)
+  .post("/cohort", impactController.findCohort);
 export default appRouter;

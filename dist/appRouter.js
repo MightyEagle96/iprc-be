@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { participantAction, registerParticipant, viewDashboard, viewParticipants, } from "./controllers/participantController.js";
-import { accreditParticipant, attendanceDashboard, getAccreditedParticipants, importAttendees, searchParticipant, } from "./controllers/attendeeController.js";
+import { accreditParticipant, attendanceDashboard, getAccreditedParticipants, importAttendees, registerAttendee, searchParticipant, } from "./controllers/attendeeController.js";
+import impactController from "./controllers/impact.controller.js";
 const appRouter = Router();
 appRouter
     .post("/registerparticipant", registerParticipant)
@@ -11,6 +12,10 @@ appRouter
     .get("/attendancedashboard", attendanceDashboard)
     .get("/searchparticipant", searchParticipant)
     .post("/accreditparticipant", accreditParticipant)
-    .get("/getaccreditedparticipants", getAccreditedParticipants);
+    .get("/getaccreditedparticipants", getAccreditedParticipants)
+    .post("/registerattendee", registerAttendee)
+    //
+    .post("/impact-registration", impactController.registerParticipant)
+    .post("/cohort", impactController.findCohort);
 export default appRouter;
 //# sourceMappingURL=appRouter.js.map

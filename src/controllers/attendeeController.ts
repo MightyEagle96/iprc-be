@@ -14,8 +14,17 @@ export const importAttendeesFunc = async (attendees: AttendeePayload[]) => {
 
 export const importAttendees = async (req: Request, res: Response) => {
   try {
-    const attendees = req.body;
-    const result = await importAttendeesFunc(attendees);
+    const attendees: AttendeePayload[] = req.body;
+
+    const updatedAttendees = attendees.map((attendee) => {
+      return {
+        ...attendee,
+        username: attendee.email,
+        accredited: true,
+        timeAccredited: new Date(),
+      };
+    });
+    const result = await importAttendeesFunc(updatedAttendees);
     res.send("Attendees imported successfully");
   } catch (error) {
     console.error(error);
@@ -95,7 +104,7 @@ export const getAccreditedParticipants = async (
 
     const participants = await Attendee.find({ accredited: true })
       .lean()
-      .sort({ updatedAt: 1 })
+      .sort({ timeAccredited: -1 })
       .skip((page - 1) * limit)
       .limit(limit);
 
@@ -109,5 +118,29 @@ export const getAccreditedParticipants = async (
     res.send({ total, participants: mappedParticipants });
   } catch (error) {
     res.status(500).send("An unexpected error occurred");
+  }
+};
+
+export const registerAttendee = async (req: Request, res: Response) => {
+  try {
+    await Attendee.create({
+      ...req.body,
+      accredited: true,
+      timeAccredited: new Date(),
+    });
+
+    io.emit("new-registration", await getAttendanceDashboard());
+    res.send("Registered successfully");
+  } catch (error: any) {
+    if (error?.code === 11000) {
+      const field: any = Object.keys(error.keyPattern)[0];
+      const value = error.keyValue?.[field];
+
+      return res
+        .status(400)
+        .send(`${field}${value ? ` (${value})` : ""} already exists`);
+    }
+
+    res.status(500).send(error?.message || "An unexpected error occurred");
   }
 };
